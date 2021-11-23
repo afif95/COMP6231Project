@@ -5,16 +5,16 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home_route():
     return "<p>COMP 6231 Project home page.</p>"
 
 
-@app.route("/unresponsive-endpoint")
+@app.route("/unresponsive-endpoint", methods=['GET', 'POST'])
 def unresponsive_endpoint():
     time.sleep(5)
     return "<p>This endpoint is slow by design.</p>"
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000)
