@@ -1,4 +1,4 @@
-# COMP6231Project
+# Exploring Kubernetes Features: Load Distribution, Autoscaling, High Availability, and Failure Recovery
 
 1. To install the required libraries: `pip3 install -r requirements.txt`
 
