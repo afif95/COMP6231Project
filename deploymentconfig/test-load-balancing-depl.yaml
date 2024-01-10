@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comp6231-project-depl
+  labels:
+    app: pythonapp
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: pythonapp
+  template:
+    metadata:
+      labels:
+        app: pythonapp
+    spec:
+      affinity:
+        # ⬇⬇⬇ This ensures pods will land on separate hosts
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions: [{ key: app, operator: In, values: [dist-load-balancing] }]
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: comp6231-project-depl
+          image: pradnyadockerdev/load-balancing-pk:latest
+          resources:
+            limits:
+              memory: "200Mi"
+            requests:
+              memory: "100Mi"
+          args: [ "--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1" ]
+          ports:
+            - containerPort: 5005
+          imagePullPolicy: Always
+      imagePullSecrets:
+        - name: privatedocker
+      terminationGracePeriodSeconds: 1

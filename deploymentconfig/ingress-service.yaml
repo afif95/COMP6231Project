@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: k8s-demo-ingress.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lb-service
+                port:
+                  number: 5005
+          - path: /load-balancing-demo
+            pathType: Prefix
+            backend:
+              service:
+                name: lb-service
+                port:
+                  number: 5005
+          - path: /unresponsive-endpoint
+            pathType: Prefix
+            backend:
+              service:
+                name: lb-service
+                port:
+                  number: 5005
+          - path: /counterapp
+            pathType: Prefix
+            backend:
+              service:
+                name: counterapp-service
+                port:
+                  number: 5005

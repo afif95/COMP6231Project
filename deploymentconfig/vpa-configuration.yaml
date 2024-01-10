@@ -1,0 +1,11 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: comp6231-project-vpa-config
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind:       Deployment
+    name:       comp6231-project
+  updatePolicy:
+    updateMode: "Off"

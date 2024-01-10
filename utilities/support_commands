@@ -1,0 +1,4 @@
+lsof -n -i TCP:8080
+Kill -9 2332323
+
+kubectl rollout history deployment counterapp-depl

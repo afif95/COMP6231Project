@@ -1,0 +1,35 @@
+# Links:
+
+# https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac
+
+# https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+
+
+
+# Ingress:
+
+Start cluster: "minikube start --nodes 2 -p multinode-demo"
+
+"kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml"
+
+"minikube addons -p multinode-demo enable ingress"
+
+"minikube tunnel -p multinode-demo"
+
+"kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0"
+
+"kubectl expose deployment web --type=NodePort --port=8080"
+
+"minikube service web --url -p multinode-demo"
+
+"kubectl apply -f test-load-balancing-depl.yaml"
+
+"kubectl expose deployment comp6231-project-depl --type=LoadBalancer --port=5005"
+
+"minikube service comp6231-project-depl --url -p multinode-demo"
+
+"kubectl apply -f ingress-service.yaml"
+
+Add to the bottom of the /etc/hosts file on your computer: "<ip_address> <hostname>"
+
+"kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80 5005:80"

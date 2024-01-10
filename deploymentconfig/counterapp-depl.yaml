@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counterapp-depl
+  labels:
+    app: counterapp
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: counterapp
+  template:
+    metadata:
+      labels:
+        app: counterapp
+    spec:
+      affinity:
+        # This ensures pods will land on separate hosts
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions: [{ key: app, operator: In, values: [counterapp] }]
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: counterapp-depl
+          image: pradnyadockerdev/counterapp:latest
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+            requests:
+              memory: "200Mi"
+              cpu: "200m"
+          ports:
+            - containerPort: 5005
+          imagePullPolicy: Always
+      terminationGracePeriodSeconds: 1

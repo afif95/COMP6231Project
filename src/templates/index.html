@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COMP 6231 Project</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $( document ).ready(function() {
+            var run_load_balancing_demo = false;
+
+            $("#load-balancing-demo-button").click(function(){
+                run_load_balancing_demo = !run_load_balancing_demo;
+                test_load_balancing();
+
+            });
+
+            function test_load_balancing() {
+                var load_balancing_task = setInterval(function(){
+                    if(run_load_balancing_demo) {
+                    $.get("/load-balancing-demo", function(data, status){
+                            var response_info = JSON.parse(data);
+                            $("#load-balancing-demo-button").text("Stop load balancing demo");
+                            $("#load-balancing-demo").append($("<p>").text("Sent sample request and received response from " + response_info.hostname + ":" + response_info.ip_address))
+                        });
+                    } else {
+                         clearInterval(load_balancing_task);
+                         $("#load-balancing-demo-button").text("Start load balancing demo");
+                    }
+                }, 500);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="base-content">
+        <p>COMP 6231 Project home page.</p>
+        <button id="load-balancing-demo-button">Start load balancing demo</button>
+    </div>
+    <div id="load-balancing-demo">
+    </div>
+</body>
+</html>

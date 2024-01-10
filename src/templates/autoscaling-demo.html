@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COMP 6231 Project</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+<div id="base-content">
+    <p>COMP 6231 Project autoscaling statistics.</p>
+    <script>
+        $( document ).ready(function() {
+            var show_autoscaling_stats = false;
+
+
+            $("#autoscaling-demo-button").click(function(){
+                show_autoscaling_stats = !show_autoscaling_stats;
+                show_autoscaling_statistics();
+
+            });
+
+            function show_autoscaling_statistics() {
+                var autoscaling_task = setInterval(function(){
+                    if(show_autoscaling_stats) {
+                    $.get("/autoscaling-demo", function(data, status){
+                            var response_info = JSON.parse(data);
+                            $("#autoscaling-demo-button").text("Stop autoscaling demo");
+                            $("#autoscaling-demo").append($("<p>").append($("<b>").text("Horizontal Pod Autoscaler logs:")).append("<br>").append('<ul>'))
+                            $("#autoscaling-demo").append($("<p>").append('</ol>').append('</li>'))
+
+                            $("#autoscaling-demo").append($("<p>").append($('<li>').append($("<u>").text("Status: ").append("<br>").append('<ol>'))))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Current Replicas: " + response_info.hpa_events.status.current_replicas).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Desired Replicas: " + response_info.hpa_events.status.desired_replicas).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Current CPU Utilization: " + response_info.hpa_events.status.current_cpu_utilization_percentage + "%").append('</li>')))
+
+                            $("#autoscaling-demo").append($("<p>").append($('<li>').append($("<u>").text("Configuration: ").append("<br>"))))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Name: " + response_info.hpa_events.configuration.name).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Namespace: " + response_info.hpa_events.configuration.namespace).append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("min_replicas: " + response_info.hpa_events.configuration.min_replicas).append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("max_replicas: " + response_info.hpa_events.configuration.max_replicas).append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Target CPU Utilization: " + response_info.hpa_events.configuration.target_cpu_utilization_percentage + "%").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append('</ol>').append('</li>').append('</ul>'))
+
+                            $("#autoscaling-demo").append($("<p>").text('---------------------------------------------------------------------'))
+                            $("#autoscaling-demo").append($("<p>").append($("<b>").text("Vertical Pod Autoscaler Recommendation: ")).append("<br>").append('<ul>'))
+
+                            $("#autoscaling-demo").append($("<p>").append($('<li>').append($("<u>").text("Lower Bound: ").append("<br>"))))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("CPU: " + response_info.vpa_events.lowerBound.cpu).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Memory: " + response_info.vpa_events.lowerBound.memory).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append('</ol>').append('</li>'))
+
+                            $("#autoscaling-demo").append($("<p>").append($('<li>').append($("<u>").text("Target: ").append("<br>"))))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("CPU: " + response_info.vpa_events.target.cpu).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Memory: " + response_info.vpa_events.target.memory).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append('</ol>').append('</li>'))
+
+                            $("#autoscaling-demo").append($("<p>").append($('<li>').append($("<u>").text("Upper Bound: ").append("<br>"))))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("CPU: " + response_info.vpa_events.upperBound.cpu).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append($('<ol>').append('<li>').text("Memory: " + response_info.vpa_events.upperBound.memory).append("<br>").append('</li>')))
+                            $("#autoscaling-demo").append($("<p>").append('</ol>').append('</li>').append('</ul>'))
+
+                           $("#autoscaling-demo").append($("<p>").append($("<b>").text('_________________________________________________________')))
+                        });
+                    } else {
+                         clearInterval(autoscaling_task);
+                         $("#autoscaling-demo-button").text("View Autoscaling statistics");
+                    }
+                }, 10000);
+            }
+        });
+        </script>
+        <button id="autoscaling-demo-button">View Autoscaling statistics</button>
+    </div>
+    <div id="autoscaling-demo"></div>
+</body>
+</html>

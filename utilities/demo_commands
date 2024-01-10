@@ -1,0 +1,58 @@
+# 0 - Multi-node setup:
+"kubectl get nodes"
+
+# 1 - Load distribution:
+# 1.1 - Ingress configuration and demo in the browser
+
+"kubectl scale deployments/comp6231-project --replicas=4"
+
+Stop load balancing demo to reduce the load.
+
+# 2 - Autoscaling:
+
+"kubectl scale deployments/comp6231-project --replicas=8"
+
+HPA and VPA application.
+
+
+# 3 - High availability:
+# 3.1 - Update application:
+Change counter app version in "counterapp-depl.yaml"
+
+"kubectl apply -f counterapp-depl.yaml --record=true"
+
+"kubectl rollout status deployment counterapp-depl"
+
+Check how it reflects in the browser.
+
+"kubectl rollout undo deployment counterapp-depl"
+
+# 3.2 - Pod disruption budget:
+"kubectl scale deployments/comp6231-project --replicas=8"
+
+"kubectl get pods -o wide"
+
+"kubectl drain multinode-demo-m02 --ignore-daemonsets"
+
+"kubectl uncordon multinode-demo-m02"
+
+"kubectl get pods"
+
+"kubectl delete pod/<pod_name>"
+
+# get etcd cluster info
+
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 member list --write-out="table"
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 endpoint status --write-out="table"
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 endpoint health
+
+
+#Etcd failure recovery
+
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:7379,127.0.0.1:5379 member remove deeb021edb338b7f
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 member add infra3 --peer-urls=http://127.0.0.1:6380
+etcd --name infra3 --initial-advertise-peer-urls http://127.0.0.1:6380 --listen-peer-urls http://127.0.0.1:6380 --advertise-client-urls http://127.0.0.1:6379 --listen-client-urls http://127.0.0.1:6379 --initial-cluster-token etcd-cluster-1  --initial-cluster infra2=http://127.0.0.1:5380,infra3=http://127.0.0.1:6380,infra0=http://127.0.0.1:2380  --initial-cluster-state existing
+
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 member list --write-out="table"
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 endpoint status --write-out="table"
+etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:6379,127.0.0.1:5379 endpoint health
